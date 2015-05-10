@@ -36,12 +36,23 @@
     
     <div id="param_area" >
 
-        <h3>Create Objects:</h3>
+      <h3>Create Objects:</h3>
+      <button id="btnNewLine" type="button"   >New Line</button>
+      <button id="btnNewCircle" type="button"   >New Circle</button>
 
-        <button id="btnNewLine" type="button"   >New Line</button>
-        <button id="btnNewCircle" type="button"   >New Circle</button>
-        <!-- add more here... -->
+      <h3>Selected Object:</h3>
+      <form>
+          Line width: 
+          <input type="number" id="width" name="width" min="1" max="8" >
+          <br>
+          Color:
+          <input type="color" id="color" name="color" >
 
+          <div id="radius">
+            Radius: 
+            <input type="number" name="radius" min="1" max="50">
+          </div>
+      </form>     
     </div>
     
     <div style="float:clear;">

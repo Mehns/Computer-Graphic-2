@@ -104,6 +104,53 @@ define(["jquery", "straight_line", "circle"],
             sceneController.select(circle); // this will also redraw
                         
         }));
+
+
+        // Select Object
+        sceneController.onSelection((function(){
+
+            var selection = sceneController.getSelectedObject();
+
+            var color = selection.lineStyle.color;
+            var width = selection.lineStyle.width;
+
+            $("#color").val(color); 
+            $("#width").val(width);
+
+            // if circle enable radius
+            if(selection.rad != null){
+                console.log("Circle selected");
+                $('#radius').show();
+            }
+            else{
+                console.log("No Circle");
+                 $('#radius').hide();
+            }
+                
+
+        }));
+
+
+        // handle color input
+        $("#color").on('input', function(){
+            var selection = sceneController.getSelectedObject(); //get selected Object
+            if(selection !== null){
+                selection.lineStyle.color = $(this).val(); //set selected Color
+                sceneController.select(selection); // redraw selection
+            }            
+        });
+
+
+        // handle width input
+        $("#width").on('input', function(){
+            var selection = sceneController.getSelectedObject(); //get selected Object
+            if(selection !== null){
+                selection.lineStyle.width = $(this).val(); //set selected Color
+                sceneController.select(selection); // redraw selection
+            }            
+        });
+
+        
         
     
     };
