@@ -54,25 +54,26 @@ define(["util", "vec2", "scene", "point_dragger"],
     // test whether the mouse position is on this line segment
     Circle.prototype.isHit = function(context,mousePos) {
 
+        // Vector length between circle center and mouse position
+        var circlelength = vec2.length(vec2.sub(mousePos,this.pos));
 
+        // Tolerance interval for selecting
+        return circlelength >= this.rad -2 && cirlength <= this.rad + 2;
 
-        // what is my current position?
-        var pos = this.pos;
+        // // what is my current position?
+        // var pos = this.pos;
     
-        // check whether distance between mouse and dragger's center
-        // is less or equal ( radius + (line width)/2 )
-        var dx = mousePos[0] - pos[0];
-        var dy = mousePos[1] - pos[1];
-        var r = this.rad;
+        // // check whether distance between mouse and dragger's center
+        // // is less or equal ( radius + (line width)/2 )
+        // var dx = mousePos[0] - pos[0];
+        // var dy = mousePos[1] - pos[1];
+        // var r = this.rad;
 
-        var hit = (dx*dx + dy*dy) <= (r*r);
+        // var hit = (dx*dx + dy*dy) <= (r*r);
 
-        console.log("Hit is: "+hit);
+        // console.log("Hit is: "+hit);
 
-        return hit; 
-
-
-
+        // return hit; 
         
     };
     
