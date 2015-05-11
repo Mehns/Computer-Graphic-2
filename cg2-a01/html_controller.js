@@ -91,7 +91,7 @@ define(["jquery", "straight_line", "circle"],
         
             // create the actual line and add it to the scene
             var style = { 
-                width: Math.floor(Math.random()*3)+1,
+                width: Math.floor(Math.random()*8)+1,
                 color: randomColor()
             };
                           
@@ -120,11 +120,17 @@ define(["jquery", "straight_line", "circle"],
             // if circle enable radius
             if(selection.rad != null){
                 console.log("Circle selected");
-                $('#radius').show();
+                console.log("Radius: "+selection.rad);
+
+
+                var radius = selection.rad;
+                
+                $('#radius').val(radius); 
+                $('#radiusDiv').show();
             }
             else{
                 console.log("No Circle");
-                 $('#radius').hide();
+                 $('#radiusDiv').hide();
             }
                 
 
@@ -145,11 +151,19 @@ define(["jquery", "straight_line", "circle"],
         $("#width").on('input', function(){
             var selection = sceneController.getSelectedObject(); //get selected Object
             if(selection !== null){
-                selection.lineStyle.width = $(this).val(); //set selected Color
+                selection.lineStyle.width = $(this).val(); //set selected Width
                 sceneController.select(selection); // redraw selection
             }            
         });
 
+        // handle radius input
+        $("#radius").on('input', function(){
+            var selection = sceneController.getSelectedObject(); //get selected Object
+            if(selection !== null){
+                selection.rad = $(this).val(); //set selected radius
+                sceneController.select(selection); // redraw selection
+            }            
+        });
         
         
     

@@ -58,7 +58,7 @@ define(["util", "vec2", "scene", "point_dragger"],
         var circlelength = vec2.length(vec2.sub(mousePos,this.pos));
 
         // Tolerance interval for selecting
-        return circlelength >= this.rad -2 && cirlength <= this.rad + 2;
+        return circlelength >= this.rad -2 && circlelength <= this.rad + 2;
 
         // // what is my current position?
         // var pos = this.pos;
