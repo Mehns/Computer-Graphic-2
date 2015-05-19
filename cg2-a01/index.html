@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    
+    <!--
+     *
+     * JavaScript / Canvas teaching framwork 
+     * (C)opyright Hartmut Schirmacher, hschirmacher.beuth-hochschule.de 
+     *
+    -->
+
+    <title>CG2 A1: Lines, Curves &amp; Canvas</title>
+    
+    <!-- import main module using RequireJS -->
+    <script data-main="main.js" src="../lib/require.js"></script>
+    
+    <!-- import style sheet -->
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css">
+    
+</head>
+
+<body>
+
+  <!-- this element will be used to diplay errors -->
+  <pre id="error"></pre>
+  
+  <!-- centered region with drawing canvas and parameter area -->
+  <div align="center">
+  
+    <canvas id="drawing_area" width="500" height="500" style="position:relative;">
+        <!-- NOTE: the "position:relative" is required due to the current  
+             implementation of mouse coordinate processing in module "util". -->
+        If you see this text, your browser probably does not 
+        support the HTML5 canvas 2D drawing context. 
+    </canvas>
+    
+    <div id="param_area" >
+
+      <h3>Create Objects:</h3>
+      <button id="btnNewLine" type="button"   >New Line</button>
+      <button id="btnNewCircle" type="button"   >New Circle</button></br>
+      <button id="btnNewParametricCurve" type="button"   >New Parametic Curve</button></br>
+      <button id="btnNewBezierCurve" type="button"   >New Bezier Curve</button></br>
+
+
+      <h3>Selected Object:</h3>
+      <form>
+        <div id="createDiv" style="display:none">
+          Line width: 
+          <input type="number" id="width" name="width" min="1" max="8" ><br>
+          Color:
+          <input type="color" id="color" name="color" >
+        </div>
+        </br>
+        
+        <!-- div for circle -->
+        <div id="radiusDiv" style="display:none">
+          Radius: 
+          <input type="number" id="radius" name="radius" min="1">
+        </div>
+
+        <!-- div for parametric curve -->
+        <div id="paraDiv" style="display:none">
+          x(t): 
+          <input type="text" name="para" id="xt" value="350+100*Math.sin(t)"></br>
+          y(t): 
+          <input type="text" name="para" id="yt" value="150+100*Math.cos(t)"></br>
+          min t: 
+          <input type="number" name="para" min="0" id="tmin"></br>
+          max t: 
+          <input type="number" name="para" min="0" id="tmax"></br></br>
+          segments: 
+          <input type="number" name="para" min="1" max="50" id="seg"></br>
+          tick marks:
+          <input type="checkbox" name="para" id="marks"></br>
+        </div>
+
+        <!-- div for bezier curve -->
+        <div id="bezierDiv" style="display:none">
+          P0X:
+          <input id="P0X" type="number" name="bezier" min="0"></br>
+          P0Y:
+          <input id="P0Y" type="number" name="bezier" min="0"></br>
+          P1X:
+          <input id="P1X" type="number" name="bezier" min="0"></br>
+          P1Y: 
+          <input id="P1Y" type="number" name="bezier" min="0"></br>
+          P2X:
+          <input id="P2X" type="number" name="bezier" min="0"></br>
+          P2Y: 
+          <input id="P2Y" type="number" name="bezier" min="0"></br>
+          P3X:
+          <input id="P3X" type="number" name="bezier" min="0"></br> 
+          P3Y:
+          <input id="P3Y" type="number" name="bezier" min="0"></br></br>
+          segments: 
+          <input type="number" name="para" min="1" max="50" id="segB"></br>
+          tick marks:
+          <input type="checkbox" name="para" id="marksB"></br></br>
+        </div>
+
+      </form>     
+    </div>
+    
+    <div style="float:clear;">
+    </div>
+    
+  </div>
+  
+</body>
+</html>
