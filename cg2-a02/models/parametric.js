@@ -23,15 +23,63 @@ define(["vbo"],
      */
     var ParametricSurface = function(gl, posFunc, config) {
 
-        window.console.log("ParametricSurface() constructor not implemented yet.")
+                // read the configuration parameters
+        config = config || {};
+        var uMin       = config.uMin   || -Math.PI;
+        var uMax       = config.uMax   || Math.PI;
+        var vMin     = config.vMin || -Math.PI;
+        var vMax     = config.vMax || Math.PI;
+        var uSegments = config.uSegments || 40;
+        var vSegments = config.vSegments || 20;
+
+        this.drawStyle   = config.drawStyle || "points";
+
+
+        window.console.log("Creating a ParametricSurface");
+
+        // generate vertex coordinates and store in an array
+        var coords = [];
+
+        // calculate steplength between points
+        var uStep = (uMax - uMin) / uSegments;
+        var vStep = (vMax - vMin) / vSegments;
+
+        // sampling in two loops for u and v
+        for(var i=0; i<=uSegments; i++) {
+            for(var j=0; j<=vSegments; j++) {
+
+                // calculate u and v for segmentCount
+                var u = uMin + i * uStep;
+                var v = vMin + j * vStep;
+
+                // calculate actual points with given function
+                var pos = posFunc(u, v);
+                coords.push(pos[0], pos[1], pos[2]);
+            }
+        }
+
+
+        // create vertex buffer object (VBO) for the coordinates
+        this.coordsBuffer = new vbo.Attribute(gl, { "numComponents": 3,
+                                                    "dataType": gl.FLOAT,
+                                                    "data": coords
+                                                  } );
 
     };
 
     // draw method: activate buffers and issue WebGL draw() method
     ParametricSurface.prototype.draw = function(gl,program) {
 
-        window.console.log("ParametricSurface.draw() not implemented yet.")
+        // bind the attribute buffers
+        program.use();
+        this.coordsBuffer.bind(gl, program, "vertexPosition");
 
+        // draw the vertices as points
+        if(this.drawStyle == "points") {
+            gl.drawArrays(gl.POINTS, 0, this.coordsBuffer.numVertices());
+        } else {
+            window.console.log("ParametricSurface: draw style " + this.drawStyle + " not implemented.");
+        }
     };
 
     // this module only returns the constructor function

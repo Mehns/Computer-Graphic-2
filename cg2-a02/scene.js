@@ -8,8 +8,8 @@
 
 /* requireJS module definition */
 define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "models/cube",
-        "models/parametric"],
-       (function(glmatrix, Program, shaders, Band, Triangle, Cube, ParametricSurface ) {
+        "models/parametric", "models/cylinder", "models/torus"],
+       (function(glmatrix, Program, shaders, Band, Triangle, Cube, ParametricSurface, Cylinder, Torus ) {
 
     "use strict";
 
@@ -35,6 +35,8 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         this.triangle  = new Triangle(gl);
         this.cube      = new Cube(gl);
         this.band      = new Band(gl, {height: 0.4, drawStyle: "points"});
+        this.cylinder  = new Cylinder(gl, true,this.programs.red);
+        this.torus     = new Torus(gl, true,this.programs.red);
 
         // create a parametric surface to be drawn in this scene
         var positionFunc = function(u,v) {
@@ -65,7 +67,9 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
                              "Show Triangle": false,
                              "Show Cube": false,
                              "Show Band": true,
-                             "Show Ellipsoid": false
+                             "Show Ellipsoid": false,
+                             "Show Cylinder": false,
+                             "Show Torus": false
                              };
     };
 
@@ -109,6 +113,12 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         }
         if(this.drawOptions["Show Ellipsoid"]) {
             this.ellipsoid.draw(gl, this.programs.red);
+        }
+        if(this.drawOptions["Show Cylinder"]) {
+            this.cylinder.draw(gl, this.programs.red);
+        }
+        if(this.drawOptions["Show Torus"]) {
+            this.torus.draw(gl, this.programs.red);
         }
     };
 
