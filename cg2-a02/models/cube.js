@@ -86,6 +86,43 @@ define(["vbo"],
                         0.5, -0.5, -0.5,  // F'': index 22
                         0.5, -0.5,  0.5   // B'': index 23
                      ];
+
+        var indices = [
+                        // front
+                        0, 1, 2,
+                        0, 2, 3,
+                        // back
+                        4, 5, 6,
+                        4, 6, 7,
+                        //left
+                        8, 9, 10,
+                        8, 10, 11,
+                        // right
+                        12, 13, 14,
+                        12, 14, 15,
+                        // top
+                        16, 17, 18,
+                        16, 18, 19,
+                        // bottom
+                        20, 21, 22,
+                        20, 22, 23
+                      ];
+
+        var colors = [
+                     [0.0, 0.0, 1.0, 1.0],    // Front/ Back face: blue
+                     [1.0, 0.0, 0.0, 1.0],    // Top/ Bottom face: red
+                     [0.0, 1.0, 0.0, 1.0]    // Right/ Left face: green
+        ];
+
+        // generate Color for all vertices of each side
+        var generatedColors = [];
+
+        for (var i = 0; i < colors.length; i++) {
+                for (var j = 0; j < 8; j++) {
+                    generatedColors = generatedColors.concat(colors[i]);
+                }
+        }
+
                                           
         // therer are 3 floats per vertex, so...
         this.numVertices = coords.length / 3;
@@ -96,6 +133,15 @@ define(["vbo"],
                                                     "data": coords 
                                                   } );
 
+        // create Index-Buffer for triangles
+        this.indexBuffer = new vbo.Indices(gl, {"indices": indices});
+
+        // create Color-Buffer
+        this.colorBuffer = new vbo.Attribute(gl, {
+                "numComponents": 4,
+                "dataType": gl.FLOAT,
+                "data": generatedColors
+        });
         
     };
 
@@ -104,9 +150,14 @@ define(["vbo"],
     
         // bind the attribute buffers
         this.coordsBuffer.bind(gl, program, "vertexPosition");
+        this.indexBuffer.bind(gl);
+        this.colorBuffer.bind(gl, program, "vertexColor");
                 
         // draw the vertices as points
-        gl.drawArrays(gl.POINTS, 0, this.coordsBuffer.numVertices()); 
+       /* gl.drawArrays(gl.POINTS, 0, this.coordsBuffer.numVertices()); */
+
+        // draw the vertices as triangles
+        gl.drawElements(gl.TRIANGLES, this.indexBuffer.numIndices(), gl.UNSIGNED_SHORT, 0); 
          
     };
         

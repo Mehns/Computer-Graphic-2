@@ -103,10 +103,10 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
 
         // draw the scene objects
         if(this.drawOptions["Show Triangle"]) {
-            this.triangle.draw(gl, this.programs.red);
+            this.triangle.draw(gl, this.programs.vertexColor);
         }
         if(this.drawOptions["Show Cube"]) {
-            this.cube.draw(gl, this.programs.red);
+            this.cube.draw(gl, this.programs.vertexColor);
         }
         if(this.drawOptions["Show Band"]) {
             this.band.draw(gl, this.programs.red);
