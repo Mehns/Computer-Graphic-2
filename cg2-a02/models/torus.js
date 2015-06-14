@@ -43,7 +43,7 @@ define(['vbo', 'models/parametric'],
                 return [ (0.5 + 0.2 * Math.cos(v)) * Math.cos(u),
                 (0.5 + 0.2 * Math.cos(v)) * Math.sin(u),
                 
-                        0.5 * Math.sin(u)
+                        0.5 * Math.sin(v)
                      ];
             };
 
