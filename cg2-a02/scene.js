@@ -8,8 +8,8 @@
 
 /* requireJS module definition */
 define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "models/cube",
-        "models/parametric", "models/cylinder", "models/torus"],
-       (function(glmatrix, Program, shaders, Band, Triangle, Cube, ParametricSurface, Cylinder, Torus ) {
+        "models/parametric", "models/cylinder", "models/torus", "models/robot"],
+       (function(glmatrix, Program, shaders, Band, Triangle, Cube, ParametricSurface, Cylinder, Torus, Robot ) {
 
     "use strict";
 
@@ -25,6 +25,9 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         this.programs.red = new Program(gl,
                                         shaders.getVertexShader("red"),
                                         shaders.getFragmentShader("red") );
+        this.programs.uni = new Program(gl,
+                                        shaders.getVertexShader("unicolor"),
+                                        shaders.getFragmentShader("unicolor") );
         this.programs.vertexColor = new Program(gl,
                                                 shaders.getVertexShader("vertex_color"),
                                                 shaders.getFragmentShader("vertex_color") );
@@ -35,8 +38,12 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         this.triangle  = new Triangle(gl);
         this.cube      = new Cube(gl);
         this.band      = new Band(gl, {height: 0.4, drawStyle: "points"});
+        this.band_solid   = new Band(gl, {height: 0.4, drawStyle: "triangles"});
+        this.band_wireframe   = new Band(gl, {height: 0.4, drawStyle: "wireframe"});
+
         this.cylinder  = new Cylinder(gl, true,this.programs.red);
         this.torus     = new Torus(gl, true,this.programs.red);
+        this.robot = new Robot(gl, this.programs);
 
         // create a parametric surface to be drawn in this scene
         var positionFunc = function(u,v) {
@@ -44,6 +51,12 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
                      0.3 * Math.sin(u) * Math.sin(v),
                      0.9 * Math.cos(u) ];
         };
+
+        this.ellipsoid = new ParametricSurface(gl, positionFunc, config);
+        this.ellipsoid_solid = new ParametricSurface(gl, positionFunc, config);
+        this.ellipsoid_wireframe = new ParametricSurface(gl, positionFunc, config);
+
+
         var config = {
             "uMin": -Math.PI,
             "uMax":  Math.PI,
@@ -52,7 +65,7 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
             "uSegments": 40,
             "vSegments": 20
         };
-        this.ellipsoid = new ParametricSurface(gl, positionFunc, config);
+        
 
         // initial position of the camera
         this.cameraTransformation = mat4.lookAt([0,0.5,3], [0,0,0], [0,1,0]);
@@ -66,10 +79,15 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         this.drawOptions = { "Perspective Projection": false,
                              "Show Triangle": false,
                              "Show Cube": false,
-                             "Show Band": true,
+                             "Show Band": false,
+                             "Show Solid Band": false,
+                             "Show Wireframe Band": false,
                              "Show Ellipsoid": false,
+                             "Show Solid Ellipsoid": false,
+                             "Show Wireframe Ellipsoid": false,
                              "Show Cylinder": false,
-                             "Show Torus": false
+                             "Show Torus": false,
+                             "Show Robot": true
                              };
     };
 
@@ -91,6 +109,7 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
             this.programs[p].use();
             this.programs[p].setUniform("projectionMatrix", "mat4", projection);
             this.programs[p].setUniform("modelViewMatrix", "mat4", this.transformation);
+            this.programs[p].setUniform('uniColor', 'vec4', [0, 0, 0, 1]);
         }
 
         // clear color and depth buffers
@@ -100,6 +119,13 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         // set up depth test to discard occluded fragments
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
+
+
+
+        // set unicolor shader to black
+       /* this.programs.uni.setUniform("uniColor", "vec4", [0,1,0,1]);*/
+
+
 
         // draw the scene objects
         if(this.drawOptions["Show Triangle"]) {
@@ -111,15 +137,33 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         if(this.drawOptions["Show Band"]) {
             this.band.draw(gl, this.programs.red);
         }
+        if(this.drawOptions["Show Solid Band"]) {
+            this.band_solid.draw(gl, this.programs.red);
+        }
+        if(this.drawOptions["Show Wireframe Band"]) {
+            this.band_wireframe.draw(gl, this.programs.uni);        
+        }
+
         if(this.drawOptions["Show Ellipsoid"]) {
             this.ellipsoid.draw(gl, this.programs.red);
         }
+        if(this.drawOptions["Show Solid Ellipsoid"]) {
+            this.band_wireframe.draw(gl, this.programs.uni);        
+        }
+        if(this.drawOptions["Show Wireframe Ellipsoid"]) {
+            this.band_wireframe.draw(gl, this.programs.uni);        
+        }
+        
         if(this.drawOptions["Show Cylinder"]) {
             this.cylinder.draw(gl, this.programs.red);
         }
         if(this.drawOptions["Show Torus"]) {
             this.torus.draw(gl, this.programs.red);
         }
+        if(this.drawOptions["Show Robot"]) {
+            this.robot.draw(gl, this.programs, this.transformation);
+        }
+
     };
 
     // the scene's rotate method is called from HtmlController, when certain

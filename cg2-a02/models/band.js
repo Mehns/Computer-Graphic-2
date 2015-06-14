@@ -59,9 +59,45 @@ define(["vbo"],
         this.coordsBuffer = new vbo.Attribute(gl, { "numComponents": 3,
                                                     "dataType": gl.FLOAT,
                                                     "data": coords
-                                                  } );
+        } );
+
+    
+
+
+        // calculate triangles for surface
+        if(this.drawStyle == "triangles"){
+                //Console.log("triangles");
+                this.numVertices = coords.length / 3;
+                var triangles = [];
+                var ix = 0;
+                for (var i = 0; i < this.numVertices - 2; i+=2){
+                    triangles[ix++] = i;
+                    triangles[ix++] = i+1;
+                    triangles[ix++] = i+2;
+
+                    triangles[ix++] = i+2;
+                    triangles[ix++] = i+1;
+                    triangles[ix++] = i+3;
+                }
+                this.triangleBuffer = new vbo.Indices(gl, { "indices": triangles} );
+        }
+
+
+        // create Wireframe-Buffer
+        if(this.drawStyle == "wireframe"){
+                //Console.log("wireframe");
+                var wireFrameIndizes = [];
+                for ( var i = 0; i<segments*2; i+=2 ) {
+                    wireFrameIndizes.push( i  , i+2 );
+                    wireFrameIndizes.push( i  , i+1 );
+                    wireFrameIndizes.push( i+1, i+3 );
+                };
+                this.wireFrameBuffer = new vbo.Indices(gl, {"indices":wireFrameIndizes});
+        }
 
     };
+
+
 
     // draw method: activate buffers and issue WebGL draw() method
     Band.prototype.draw = function(gl,program) {
@@ -69,12 +105,26 @@ define(["vbo"],
         // bind the attribute buffers
         program.use();
         this.coordsBuffer.bind(gl, program, "vertexPosition");
+        if(this.triangleBuffer)
+            this.triangleBuffer.bind(gl);
+
+        if(this.wireFrameBuffer)
+            this.wireFrameBuffer.bind(gl);
+
+
 
         // draw the vertices as points
         if(this.drawStyle == "points") {
             gl.drawArrays(gl.POINTS, 0, this.coordsBuffer.numVertices());
-        } else {
-            window.console.log("Band: draw style " + this.drawStyle + " not implemented.");
+        } else if(this.drawStyle == "triangles"){
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LESS);
+            gl.enable(gl.POLYGON_OFFSET_FILL);
+            gl.polygonOffset(1.0, 1.0);
+            gl.drawElements(gl.TRIANGLES, this.triangleBuffer.numIndices(), gl.UNSIGNED_SHORT, 0);
+            gl.disable(gl.POLYGON_OFFSET_FILL);
+        } else if(this.drawStyle == "wireframe"){
+            gl.drawElements(gl.LINE_STRIP, this.wireFrameBuffer.numIndices(), gl.UNSIGNED_SHORT, 0);
         }
 
     };
