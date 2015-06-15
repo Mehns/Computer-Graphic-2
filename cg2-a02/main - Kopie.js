@@ -62,29 +62,6 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
     
     };
 
-    var roboterAnimation = function (scene) {
-            var dt = 0;
-            var ddt = 0;
-            // create animation to rotate the scene
-            var animation = new Animation((function (t, deltaT) {
-                dt += deltaT * animation.customSpeed % 0.035;
-                ddt += deltaT * animation.customSpeed % 0.04;
-                var angle = -Math.sin(dt) - Math.cos(dt);
-                var armAngle = -Math.sin(ddt) - Math.cos(ddt);
-
-
-                scene.rotate("rightLowerArmUp", angle);
-                scene.rotate("leftLowerArmDown", angle);
-                scene.rotate("rightArmUp",armAngle);
-                scene.rotate("rotateHeadLeft",armAngle);
-                scene.rotate("rotateLeftHand",angle);
-                scene.rotate("rotateRightHand",angle);
-                scene.draw();
-
-            } )); // end animation callback
-
-        };
-
     var makeWebGLContext = function(canvas_name) {
     
         // get the canvas element to be used for drawing
@@ -127,27 +104,7 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
              'x': {axis: "worldX", angle:  5.0}, 
              'X': {axis: "worldX", angle: -5.0}, 
              'y': {axis: "worldY", angle:  5.0}, 
-             'Y': {axis: "worldY", angle: -5.0},
-
-             'r': {axis: "rightArmUp", angle: 1.0},
-             'f': {axis: "rightArmDown", angle: -1.0},
-
-             'e': {axis: "rightLowerArmUp", angle: 1.0},
-             'd': {axis: "rightLowerArmDown", angle: -1.0},
-
-             't': {axis: "leftArmUp", angle: 1.0},
-             'g': {axis: "leftArmDown", angle: -1.0},
-
-             'z': {axis: "leftLowerArmUp", angle: 1.0},
-             'h': {axis: "leftLowerArmDown", angle: -1.0},
-
-             'w': {axis: "rotateRightHand", angle: 1.0},
-             's': {axis: "rotateLeftHand", angle: 1.0},
-
-             'u': {axis: "rotateHeadLeft", angle: -1.0},
-             'j': {axis: "rotateHeadRight", angle: 1.0},
-
-             'o': {axis: "robotWave", angle: -1.0}
+             'Y': {axis: "worldY", angle: -5.0}
         };
 
         // create HtmlController that takes care of all interaction

@@ -52,20 +52,41 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
                      0.9 * Math.cos(u) ];
         };
 
-        this.ellipsoid = new ParametricSurface(gl, positionFunc, config);
-        this.ellipsoid_solid = new ParametricSurface(gl, positionFunc, config);
-        this.ellipsoid_wireframe = new ParametricSurface(gl, positionFunc, config);
 
-
-        var config = {
+        var config1 = {
             "uMin": -Math.PI,
             "uMax":  Math.PI,
             "vMin": -Math.PI,
             "vMax":  Math.PI,
             "uSegments": 40,
-            "vSegments": 20
+            "vSegments": 20,
+            "drawStyle": "points"
         };
-        
+
+        var config2 = {
+            "uMin": -Math.PI,
+            "uMax":  Math.PI,
+            "vMin": -Math.PI,
+            "vMax":  Math.PI,
+            "uSegments": 40,
+            "vSegments": 20,
+            "drawStyle": "wireframe"
+        };
+
+        var config3 = {
+            "uMin": -Math.PI,
+            "uMax":  Math.PI,
+            "vMin": -Math.PI,
+            "vMax":  Math.PI,
+            "uSegments": 40,
+            "vSegments": 20,
+            "drawStyle": "triangles"
+        };
+
+
+        this.ellipsoid = new ParametricSurface(gl, positionFunc, config1);
+        this.ellipsoid_solid = new ParametricSurface(gl, positionFunc, config3);
+        this.ellipsoid_wireframe = new ParametricSurface(gl, positionFunc, config2);
 
         // initial position of the camera
         this.cameraTransformation = mat4.lookAt([0,0.5,3], [0,0,0], [0,1,0]);
@@ -148,10 +169,10 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
             this.ellipsoid.draw(gl, this.programs.red);
         }
         if(this.drawOptions["Show Solid Ellipsoid"]) {
-            this.band_wireframe.draw(gl, this.programs.uni);        
+            this.ellipsoid_solid.draw(gl, this.programs.red);        
         }
         if(this.drawOptions["Show Wireframe Ellipsoid"]) {
-            this.band_wireframe.draw(gl, this.programs.uni);        
+            this.ellipsoid_wireframe.draw(gl, this.programs.uni);        
         }
         
         if(this.drawOptions["Show Cylinder"]) {
@@ -182,6 +203,45 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
                 break;
             case "worldX":
                 mat4.rotate(this.transformation, angle, [1,0,0]);
+                break;
+             case 'rightArmUp':
+                this.robot.rightArmUp(angle);
+                break;
+            case 'rightArmDown':
+                this.robot.rightArmDown(angle);
+                break;
+            case 'rightLowerArmUp':
+                this.robot.rightLowerArmUp(angle);
+                break;
+            case 'rightLowerArmDown':
+                this.robot.rightLowerArmDown(angle);
+                break;
+            case 'leftArmUp':
+                this.robot.leftArmUp(angle);
+                break;
+            case 'leftArmDown':
+                this.robot.leftArmDown(angle);
+                break;
+            case 'leftLowerArmUp':
+                this.robot.leftLowerArmUp(angle);
+                break;
+            case 'leftLowerArmDown':
+                this.robot.leftLowerArmDown(angle);
+                break;
+            case 'rotateRightHand':
+                this.robot.rotateRightHand(angle);
+                break;
+            case 'rotateLeftHand':
+                this.robot.rotateLeftHand(angle);
+                break;
+            case 'rotateHeadRight':
+                this.robot.rotateHeadRight(angle);
+                break;
+            case 'rotateHeadLeft':
+                this.robot.rotateHeadLeft(angle);
+                break;
+            case 'robotWave':
+                this.robot.wave();
                 break;
             default:
                 window.console.log("axis " + rotationAxis + " not implemented.");
