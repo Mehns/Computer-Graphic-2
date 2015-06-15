@@ -55,9 +55,15 @@ define(["jquery"],
         
             // toggle animation on/off
             if( $("#anim_Toggle").attr("checked") == undefined ) {
-                animation.stop();
+                animation.rotateAll.stop();
             } else {
-                animation.resume();
+                animation.rotateAll.resume();
+            };
+
+            if( $("#anim_robo_Toggle").attr("checked") == undefined ) {
+                animation.animateRoboter.stop();
+            } else {
+                animation.animateRoboter.resume();
             };
 
             // set animation speed

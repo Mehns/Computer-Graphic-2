@@ -69,8 +69,8 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
             var animation = new Animation((function (t, deltaT) {
                 dt += deltaT * animation.customSpeed % 0.035;
                 ddt += deltaT * animation.customSpeed % 0.04;
-                var angle = -Math.sin(dt) - Math.cos(dt);
-                var armAngle = -Math.sin(ddt) - Math.cos(ddt);
+                var angle = Math.sin(dt) - Math.cos(dt);
+                var armAngle = Math.sin(ddt) - Math.cos(ddt);
 
 
                 scene.rotate("rightLowerArmUp", angle);
@@ -82,6 +82,11 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
                 scene.draw();
 
             } )); // end animation callback
+
+            // set an additional attribute that can be controlled from the outside
+            animation.customSpeed = 20; 
+
+            return animation;
 
         };
 
@@ -118,7 +123,11 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
                                         
         // create scene, create animation, and draw once
         var scene = new Scene(gl);
-        var animation = makeAnimation(scene);
+        var animations = {};
+        animations.rotateAll = makeAnimation(scene);
+        animations.animateRoboter = roboterAnimation(scene);
+        // var animation = makeAnimation(scene);
+        // var animation2 = roboterAnimation(scene);
         scene.draw();        
 
         // mapping from character pressed on the keyboard to 
@@ -152,7 +161,7 @@ define(["jquery", "gl-matrix", "webgl-debug", "animation", "scene", "html_contro
 
         // create HtmlController that takes care of all interaction
         // of HTML elements with the scene and the animation
-        var controller = new HtmlController(scene,animation,keyMap); 
+        var controller = new HtmlController(scene,animations,keyMap); 
         
     })); // $(document).ready()
 
