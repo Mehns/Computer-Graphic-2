@@ -50,6 +50,16 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         this.materials.planet.setUniform( "light.color", "vec3", [1,1,1] );
 
         // TODO load and create required textures
+        this.dayTexture = new texture.Texture2D(gl, "textures/earth_month04.jpg");
+        this.nightTexture = new texture.Texture2D(gl, "textures/earth_at_night_2048.jpg");
+
+        var _scene = this;
+            texture.onAllTexturesLoaded(function(){
+                _scene.programs.planet.use();
+                _scene.programs.planet.setTexture("dayTexture", 0, _scene.dayTexture);
+                _scene.programs.planet.setTexture("nightTexture", 1, _scene.nightTexture);
+                _scene.draw();
+            });
 
         // initial position of the camera
         this.cameraTransformation = mat4.lookAt([0,0,3], [0,0,0], [0,1,0]);
@@ -65,12 +75,18 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         this.sunLight.addMaterial(this.materials.planet);
 
         // planet surface
-        this.planetSurface = new Sphere(gl, true);
+        var surfaceConfig = {
+            drawStyle: 'surface'
+        }
+        this.planetSurface = new Sphere(gl, surfaceConfig);
         this.surfaceNode = new SceneNode("Surface");
         this.surfaceNode.add(this.planetSurface, this.materials.planet);
 
         // planet wireframes
-        this.planetWireframe = new Sphere(gl, false);
+        var wireConfig = {
+            drawStyle: 'wireframe'
+        }
+        this.planetWireframe = new Sphere(gl, wireConfig);
         this.wireframeNode = new SceneNode("Wireframe");
         this.wireframeNode.add(this.planetWireframe, this.materials.grid);
 
@@ -94,7 +110,9 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         this.drawOptions = { 
                              "Show Surface": true,
                              "Show Grid": false,
-                             "Debug": false
+                             "Debug": false,
+                             "DayTexture": true,
+                             "NightTexture": false
                              };                       
     };
 
@@ -128,8 +146,9 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         // show/hide certain parts of the scene            
         this.surfaceNode.setVisible( this.drawOptions["Show Surface"] ); 
         this.wireframeNode.setVisible( this.drawOptions["Show Grid"] );
-        this.materials.planet.setUniform("debug", "bool", this.drawOptions["Debug"]);
-
+        this.materials.planet.setUniform("debug", "bool", this.drawOptions["Debug"] );
+        this.materials.planet.setUniform("dayOn", "bool", this.drawOptions["DayTexture"]);
+        this.materials.planet.setUniform("nightOn", "bool", this.drawOptions["NightTexture"]);
 
         // draw the scene 
         this.universeNode.draw(gl, null, modelViewMatrix);

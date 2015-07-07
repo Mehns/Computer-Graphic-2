@@ -36,6 +36,16 @@ define(['vbo', 'models/parametric'],
                 "drawStyle": "wireframe"
             };
 
+            var config3 = {
+                "uMin": -Math.PI,
+                "uMax":  Math.PI,
+                "vMin": -Math.PI,
+                "vMax":  Math.PI,
+                "uSegments": 40,
+                "vSegments": 20,
+                "drawStyle": "triangles"
+            };
+
 /*            var radiusTorus = 5;
             var radiusSize = 2;*/
 
@@ -56,9 +66,9 @@ define(['vbo', 'models/parametric'],
 
 
             if (solid) {
-                this.torus = new ParametricSurface(gl, positionFunc, config);
-            } else {
                 this.torus = new ParametricSurface(gl, positionFunc, configWire);
+            } else {
+                this.torus = new ParametricSurface(gl, positionFunc, config);
             }
         };
         Torus.prototype.draw = function(gl) {

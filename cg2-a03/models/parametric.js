@@ -25,12 +25,12 @@ define(["vbo"],
 
         // read the configuration parameters
         config = config || {};
-        var uMin       = config.uMin   || -Math.PI;
-        var uMax       = config.uMax   || Math.PI;
-        var vMin     = config.vMin || -Math.PI;
-        var vMax     = config.vMax || Math.PI;
-        var uSegments = config.uSegments || 40;
-        var vSegments = config.vSegments || 20;
+        var uMin       = config.uMin;
+        var uMax       = config.uMax;
+        var vMin     = config.vMin;
+        var vMax     = config.vMax;
+        var uSegments = config.uSegments;
+        var vSegments = config.vSegments;
 
         this.drawStyle   = config.drawStyle || "points";
 
@@ -40,10 +40,14 @@ define(["vbo"],
         // generate vertex coordinates and normals store in an array
         var coords = [];
         var normals = [];
+        var texCoords = [];
 
         // calculate steplength between points
         var uStep = (uMax - uMin) / uSegments;
         var vStep = (vMax - vMin) / vSegments;
+
+        //var umax = uMin + uStep * uSegments;
+        //var vmax = vMin + vStep * vSegments;
 
         // sampling in two loops for u and v
         for(var i=0; i<=uSegments; i++) {
@@ -53,6 +57,7 @@ define(["vbo"],
                 var u = uMin + i * uStep;
                 var v = vMin + j * vStep;
 
+
                 // calculate actual points with given function
                 var pos = posFunc(u, v);
                 coords.push(pos[0], pos[1], pos[2]);
@@ -60,6 +65,9 @@ define(["vbo"],
                 // calculate normals
                 var normal = normalFunc(u,v);
                 normals.push(normal[0], normal[1], normal[2])
+
+                // texCoords between 0..1
+                texCoords.push(-v/vMax, u/uMax);
 
             }
         }
@@ -77,7 +85,12 @@ define(["vbo"],
                                                     "data": normals
                                                   } );
 
-
+        // create texCoordsBuffer buffer object (VBO) for the coordinates
+        this.texCoordsBuffer = new vbo.Attribute(gl, { "numComponents": 2,
+                                                       "dataType": gl.FLOAT,
+                                                       "data": texCoords
+                                                     } );
+ 
 
             if(this.drawStyle == "surface"){
                 //Console.log("triangles");
@@ -122,6 +135,7 @@ define(["vbo"],
 
         this.coordsBuffer.bind(gl, program, "vertexPosition");
         this.normalBuffer.bind(gl, program, "vertexNormal")
+        this.texCoordsBuffer.bind(gl, program,  "vertexTexCoords");
 
 
         if(this.triangleBuffer)

@@ -125,7 +125,7 @@ define(['gl-matrix', 'vbo', 'models/parametric', 'models/cube', 'models/cylinder
 
 
 
-
+            // Roboter skeleton
 			this.neck.add(this.head);
             this.torso.add(this.neck);
             this.torso.add(this.shoulderL);
@@ -141,7 +141,7 @@ define(['gl-matrix', 'vbo', 'models/parametric', 'models/cube', 'models/cylinder
 
 
 
-            // Skins
+            // Roboter skins
             var torsoSkin = new SceneNode("torsoSkin");
             mat4.scale(torsoSkin.transform(), torsoSize);
             torsoSkin.add(cube, bodyColor);
@@ -181,7 +181,7 @@ define(['gl-matrix', 'vbo', 'models/parametric', 'models/cube', 'models/cylinder
             handLSkin.add(cube, bodyColor);
             mat4.scale(handLSkin.transform(), handSize);
 
-            // Connection Skeleton + Skins
+            // Connection skeleton + skins
             this.torso.add(torsoSkin);
             this.head.add(headSkin);
             this.neck.add(neckSkin);

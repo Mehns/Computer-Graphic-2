@@ -16,6 +16,9 @@ precision mediump float;
 varying vec4  ecPosition;
 varying vec3  ecNormal;
 varying vec2  texCoords;
+
+uniform sampler2D dayTexture;
+uniform sampler2D nightTexture;
  
 // transformation matrices
 uniform mat4  modelViewMatrix;
@@ -28,6 +31,9 @@ uniform vec3 ambientLight;
 
 // from Exercise
 uniform bool debug;
+uniform bool dayOn;
+uniform bool nightOn;
+
 
 
 
@@ -66,32 +72,22 @@ uniform LightSource light;
 vec3 phong(vec3 pos, vec3 n, vec3 v, LightSource light, PhongMaterial material) {
 
 
-/*    //debug
-    float darkFactor = 1.0;
-    if(debug){
-        if(mod(texCoords.s, 0.05) > 0.025)
-        darkFactor = 0.5;
-    }
-
     //multiplier for smooth transitions
     vec3 l = normalize(light.direction);
     float ndotl = dot(n,-l);
     float clampedNdotL = clamp(ndotl, 0.0, 0.5);
     float multiplier = (0.0 - clampedNdotL + 0.5) * 2.0;
 
-
-
-
-    //shows green debug line
-    if (debug) {
-        if(ndotl >= 0.0 && ndotl <= 0.03) {
-            return vec3(0,1,0);
-        }
-    }*/
-
+    // textures
+    vec3 dayColor = texture2D(dayTexture, texCoords).rgb * 2.0;
+    vec3 nightColor = texture2D(nightTexture, texCoords).rgb;
     
     // ambient part
     vec3 ambient = material.ambient * ambientLight;
+    vec3 ambientBase = ambientLight;
+    if(nightOn){
+        ambient = nightColor * ambientBase;
+    }
     
     // back face towards viewer (looking at the earth from the inside)?
     float ndotv = dot(n,v);
@@ -99,15 +95,21 @@ vec3 phong(vec3 pos, vec3 n, vec3 v, LightSource light, PhongMaterial material) 
         return vec3(1,0,0);
     
     // vector from light to current point
-    vec3 l = normalize(light.direction);
+    //vec3 l = normalize(light.direction);
     
     // cos of angle between light and surface. 
-    float ndotl = dot(n,-l);
+    //float ndotl = dot(n,-l);
     if(ndotl<=0.0) 
         return ambient; // shadow / facing away from the light source
     
+
+
     // diffuse contribution
     vec3 diffuse = material.diffuse * light.color * ndotl;
+    vec3 diffuseBase = light.color * ndotl;
+    if(dayOn){
+        diffuse = dayColor * diffuseBase;
+    }
     
      // reflected light direction = perfect reflection direction
     vec3 r = reflect(l,n);
@@ -118,9 +120,29 @@ vec3 phong(vec3 pos, vec3 n, vec3 v, LightSource light, PhongMaterial material) 
     // specular contribution
     vec3 specular = material.specular * light.color * pow(rdotv, material.shininess);
 
+
+
+    //shows green debug line
+    if (debug) {
+        if(ndotl >= 0.0 && ndotl <= 0.03) {
+            return vec3(0,1,0);
+        }
+    }
+
+
+    //debug
+    float darkFactor = 1.0;
+    if(debug){
+        if(mod(texCoords.s, 0.05) > 0.025)
+        darkFactor = 0.5;
+        ambient *= darkFactor;
+        diffuse *= darkFactor;
+    }
+    
+
+
     // return sum of all contributions
     return ambient + diffuse + specular;
-    
 }
 
 void main() {

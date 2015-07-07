@@ -41,8 +41,8 @@ define(["gl-matrix", "program", "shaders", "models/band", "models/triangle", "mo
         this.band_solid   = new Band(gl, {height: 0.4, drawStyle: "triangles"});
         this.band_wireframe   = new Band(gl, {height: 0.4, drawStyle: "wireframe"});
 
-        this.cylinder  = new Cylinder(gl, true,this.programs.red);
-        this.torus     = new Torus(gl, true,this.programs.red);
+        this.cylinder  = new Cylinder(gl, true, this.programs.red);
+        this.torus     = new Torus(gl, false, this.programs.red);
         this.robot = new Robot(gl, this.programs);
 
         // create a parametric surface to be drawn in this scene
