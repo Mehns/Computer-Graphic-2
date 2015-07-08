@@ -17,8 +17,11 @@ varying vec4  ecPosition;
 varying vec3  ecNormal;
 varying vec2  texCoords;
 
+//textures
 uniform sampler2D dayTexture;
 uniform sampler2D nightTexture;
+uniform sampler2D bathymetryTexture;
+uniform sampler2D cloudsTexture;
  
 // transformation matrices
 uniform mat4  modelViewMatrix;
@@ -33,9 +36,9 @@ uniform vec3 ambientLight;
 uniform bool debug;
 uniform bool dayOn;
 uniform bool nightOn;
-
-
-
+uniform bool redgreen;
+uniform bool gloss;
+uniform bool clouds;
 
 
 // Material
@@ -79,15 +82,42 @@ vec3 phong(vec3 pos, vec3 n, vec3 v, LightSource light, PhongMaterial material) 
     float multiplier = (0.0 - clampedNdotL + 0.5) * 2.0;
 
     // textures
-    vec3 dayColor = texture2D(dayTexture, texCoords).rgb * 2.0;
-    vec3 nightColor = texture2D(nightTexture, texCoords).rgb;
+    vec3 dayColor = texture2D(dayTexture, texCoords).rgb * 1.5;
+    vec3 nightColor = texture2D(nightTexture, texCoords).rgb * 1.5;
+    vec3 bathyColor = texture2D(bathymetryTexture, texCoords).rgb;
+    vec3 cloudsColor = texture2D(cloudsTexture, texCoords).rgb;
+
+
+
+    // red/green map
+    if(redgreen){
+        if(bathyColor.x <= 0.2){ //if TextureColor is black draw green
+            return vec3(0, 1, 0);
+        }
+        else
+            return vec3(1, 0, 0);
+    }
     
-    // ambient part
+    
+    // ambient part => nightSide
     vec3 ambient = material.ambient * ambientLight;
     vec3 ambientBase = ambientLight;
     if(nightOn){
         ambient = nightColor * ambientBase;
     }
+
+
+
+    // clouds nightSide
+    if(clouds){
+        ambient = mix(ambient, -cloudsColor * ambientBase, cloudsColor.x);
+    }
+
+
+
+    
+
+
     
     // back face towards viewer (looking at the earth from the inside)?
     float ndotv = dot(n,v);
@@ -105,20 +135,43 @@ vec3 phong(vec3 pos, vec3 n, vec3 v, LightSource light, PhongMaterial material) 
 
 
     // diffuse contribution
+/*    vec3 diffuse = material.diffuse * light.color * ndotl;
+    vec3 diffuseBase = light.color * ndotl;
+    if(dayOn){
+        diffuse = dayColor * diffuseBase;
+    }*/
+
     vec3 diffuse = material.diffuse * light.color * ndotl;
     vec3 diffuseBase = light.color * ndotl;
     if(dayOn){
         diffuse = dayColor * diffuseBase;
     }
+
+    // clouds daySide
+    if(clouds){
+        diffuse = mix(diffuse, cloudsColor * ndotl * 1.5, cloudsColor.x); // linear interpolation
+    }
+
+
     
      // reflected light direction = perfect reflection direction
     vec3 r = reflect(l,n);
     
     // angle between reflection dir and viewing dir
     float rdotv = max( dot(r,v), 0.0);
+
+    // multiplier for bathemetry 
+    float specularMultiplier = 1.0;
+    if(gloss){
+        if(bathyColor.x <= 0.2){ //if TextureColor is black (land) reduce glossines
+            specularMultiplier = 0.2;
+            material.shininess = 1.0;
+        }
+    }
+
     
     // specular contribution
-    vec3 specular = material.specular * light.color * pow(rdotv, material.shininess);
+    vec3 specular = specularMultiplier * material.specular * light.color * pow(rdotv, material.shininess);
 
 
 

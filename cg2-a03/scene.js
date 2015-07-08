@@ -40,7 +40,7 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         this.materials.planet.setUniform( "material.ambient",   "vec3", [0.6,0.2,0.2] ); 
         this.materials.planet.setUniform( "material.diffuse",   "vec3", [0.8,0.2,0.2] ); 
         this.materials.planet.setUniform( "material.specular",  "vec3", [0.4,0.4,0.4] ); 
-        this.materials.planet.setUniform( "material.shininess", "float", 80 ); 
+        this.materials.planet.setUniform( "material.shininess", "float", 200 ); 
 
         // set light properties for shader
         this.materials.planet.setUniform( "ambientLight", "vec3", [0.4,0.4,0.4]);
@@ -52,12 +52,16 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         // TODO load and create required textures
         this.dayTexture = new texture.Texture2D(gl, "textures/earth_month04.jpg");
         this.nightTexture = new texture.Texture2D(gl, "textures/earth_at_night_2048.jpg");
+        this.bathymetryTexture = new texture.Texture2D(gl, "textures/earth_bathymetry_2048.jpg");
+        this.cloudsTexture = new texture.Texture2D(gl, "textures/earth_clouds_2048.jpg");
 
         var _scene = this;
             texture.onAllTexturesLoaded(function(){
                 _scene.programs.planet.use();
                 _scene.programs.planet.setTexture("dayTexture", 0, _scene.dayTexture);
                 _scene.programs.planet.setTexture("nightTexture", 1, _scene.nightTexture);
+                _scene.programs.planet.setTexture("bathymetryTexture", 2, _scene.bathymetryTexture);
+                _scene.programs.planet.setTexture("cloudsTexture", 3, _scene.cloudsTexture);
                 _scene.draw();
             });
 
@@ -112,7 +116,10 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
                              "Show Grid": false,
                              "Debug": false,
                              "DayTexture": true,
-                             "NightTexture": false
+                             "NightTexture": false,
+                             "RedGreen": false,
+                             "GlossMap": false,
+                             "Clouds": false
                              };                       
     };
 
@@ -149,6 +156,9 @@ define(["gl-matrix", "program", "scene_node", "shaders", "directional_light", "m
         this.materials.planet.setUniform("debug", "bool", this.drawOptions["Debug"] );
         this.materials.planet.setUniform("dayOn", "bool", this.drawOptions["DayTexture"]);
         this.materials.planet.setUniform("nightOn", "bool", this.drawOptions["NightTexture"]);
+        this.materials.planet.setUniform("redgreen", "bool", this.drawOptions["RedGreen"]);
+        this.materials.planet.setUniform("gloss", "bool", this.drawOptions["GlossMap"]);
+        this.materials.planet.setUniform("clouds", "bool", this.drawOptions["Clouds"]);
 
         // draw the scene 
         this.universeNode.draw(gl, null, modelViewMatrix);
